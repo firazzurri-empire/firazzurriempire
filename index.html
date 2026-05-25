@@ -1,356 +1,437 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FIRAZZURRI EMPIRE</title>
+  <title>FIRAZZURRI EMPIRE | Empowering Progress</title>
+  
+  <!-- Load Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
+  <!-- Load Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
   <style>
-    html { scroll-behavior: smooth; }
-    .glass-panel { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
-    .text-gradient { background: linear-gradient(to right, #e2e8f0, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  </style>
-</head>
-<body class="bg-slate-950 text-slate-300 font-sans selection:bg-cyan-500/30">
-  <div id="root"></div>
-
-  <script type="text/babel" data-type="module">
-    import React, { useState, useEffect, useRef } from 'https://esm.sh/react@18.2.0';
-    import ReactDOM from 'https://esm.sh/react-dom@18.2.0/client';
-    import { 
-      Menu, X, ChevronRight, Briefcase, Monitor, Wrench, 
-      Hammer, ShoppingBag, Mail, MapPin, Phone, ArrowRight,
-      ShieldCheck, Award, Building
-    } from 'https://esm.sh/lucide-react@0.344.0';
-
-    // --- CUSTOM HOOK FOR SCROLL ANIMATIONS ---
-    const useIntersectionObserver = (options = {}) => {
-      const [isIntersecting, setIsIntersecting] = useState(false);
-      const ref = useRef(null);
-
-      useEffect(() => {
-        const observer = new IntersectionObserver(([entry]) => {
-          if (entry.isIntersecting) {
-            setIsIntersecting(true);
-            observer.unobserve(entry.target);
-          }
-        }, { threshold: 0.1, ...options });
-
-        if (ref.current) observer.observe(ref.current);
-        return () => { if (ref.current) observer.unobserve(ref.current); };
-      }, [options]);
-
-      return [ref, isIntersecting];
-    };
-
-    const FadeIn = ({ children, delay = 0, direction = 'up', className = '' }) => {
-      const [ref, isVisible] = useIntersectionObserver();
-      
-      const getTransform = () => {
-        switch (direction) {
-          case 'up': return 'translateY(30px)';
-          case 'down': return 'translateY(-30px)';
-          case 'left': return 'translateX(-30px)';
-          case 'right': return 'translateX(30px)';
-          default: return 'translateY(0)';
-        }
-      };
-
-      const style = {
-        opacity: isVisible ? 1 : 0,
-        transform: isVisible ? 'translate(0)' : getTransform(),
-        transition: `all 0.8s cubic-bezier(0.17, 0.55, 0.55, 1) ${delay}s`,
-      };
-
-      return <div ref={ref} style={style} className={className}>{children}</div>;
-    };
-
-    // --- DATA FROM PDF ---
-    const SERVICES = [
-      { title: 'Office & Stationery Supplies', icon: <Briefcase size={28} className="text-cyan-400" />, description: 'Comprehensive office essentials, equipment, furniture, and customized corporate items to ensure smooth daily operations.' },
-      { title: 'Information Technology', icon: <Monitor size={28} className="text-cyan-400" />, description: 'End-to-end IT solutions including hardware supply, networking, servers, and preventive maintenance.' },
-      { title: 'Maintenance & Facility', icon: <Wrench size={28} className="text-cyan-400" />, description: 'Routine office maintenance, electrical, plumbing, and cleaning services ensuring a safe and professional environment.' },
-      { title: 'Renovation Works', icon: <Hammer size={28} className="text-cyan-400" />, description: 'Tailored small-scale renovation, layout partitioning, flooring, and structural improvements for modern workspaces.' },
-      { title: 'General Trading', icon: <ShoppingBag size={28} className="text-cyan-400" />, description: 'Customized sourcing for diverse client needs including PPE, corporate gifts, and specialized procurement.' },
-    ];
-
-    const PROJECTS = [
-      { client: 'Majlis Bandaraya Pulau Pinang (MBPP)', scope: 'Supply of operational, cleaning, and safety equipment for municipal operations.', image: 'https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
-      { client: 'Jabatan Insolvensi Malaysia', scope: 'Supply of office consumables, filing accessories, and operational support items.', image: 'https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
-      { client: 'Jabatan Penerangan Malaysia', scope: 'Delivery of essential office and operational items required for daily administrative activities.', image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' }
-    ];
-
-    function App() {
-      const [isScrolled, setIsScrolled] = useState(false);
-      const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-      useEffect(() => {
-        const handleScroll = () => setIsScrolled(window.scrollY > 50);
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-      }, []);
-
-      const scrollTo = (id) => {
-        setMobileMenuOpen(false);
-        const element = document.getElementById(id);
-        if (element) element.scrollIntoView({ behavior: 'smooth' });
-      };
-
-      return (
-        <div className="min-h-screen">
-          {/* --- NAVIGATION --- */}
-          <nav className={`fixed w-full z-50 transition-all duration-500 ${isScrolled ? 'py-4 glass-panel shadow-2xl' : 'py-6 bg-transparent'}`}>
-            <div className="max-w-7xl mx-auto px-6 lg:px-12 flex justify-between items-center">
-              <div className="flex items-center gap-3 cursor-pointer" onClick={() => scrollTo('home')}>
-                <img src="./FirazzurriEmpire_logo_transparent.png" alt="FIRAZZURRI EMPIRE" className="h-12 sm:h-16 w-auto object-contain drop-shadow-md" />
-              </div>
-              <div className="hidden md:flex gap-8 text-sm tracking-widest font-medium uppercase">
-                <button onClick={() => scrollTo('about')} className="text-slate-200 hover:text-cyan-400 transition-colors">About</button>
-                <button onClick={() => scrollTo('services')} className="text-slate-200 hover:text-cyan-400 transition-colors">Services</button>
-                <button onClick={() => scrollTo('projects')} className="text-slate-200 hover:text-cyan-400 transition-colors">Projects</button>
-                <button onClick={() => scrollTo('contact')} className="text-slate-200 hover:text-cyan-400 transition-colors">Contact</button>
-              </div>
-              <button className="md:hidden text-white" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-                {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
-              </button>
-            </div>
-            {mobileMenuOpen && (
-              <div className="absolute top-full left-0 w-full glass-panel flex flex-col py-6 px-6 gap-6 md:hidden border-t border-white/10">
-                {['about', 'services', 'projects', 'contact'].map((item) => (
-                  <button key={item} onClick={() => scrollTo(item)} className="text-left text-lg tracking-widest uppercase text-slate-200 hover:text-cyan-400">{item}</button>
-                ))}
-              </div>
-            )}
-          </nav>
-
-          {/* --- HERO SECTION --- */}
-          <section id="home" className="relative min-h-screen flex items-center pt-20 overflow-hidden">
-            <div className="absolute inset-0 z-0">
-              <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" alt="Corporate Architecture" className="w-full h-full object-cover opacity-15 scale-105 transform origin-center animate-[pulse_20s_ease-in-out_infinite] grayscale" />
-              <div className="absolute inset-0 bg-gradient-to-b from-slate-950/60 via-slate-950/80 to-slate-950"></div>
-            </div>
-            <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 w-full">
-              <FadeIn delay={0.2} direction="up">
-                <div className="inline-block border border-cyan-500/30 rounded-full px-4 py-1.5 mb-6 glass-panel">
-                  <span className="text-cyan-400 text-xs font-semibold tracking-widest uppercase flex items-center gap-2">
-                    <ShieldCheck size={14} /> SSM & ePerolehan Registered
-                  </span>
-                </div>
-              </FadeIn>
-              <FadeIn delay={0.4} direction="up">
-                <h1 className="text-5xl md:text-7xl lg:text-8xl font-light text-white leading-tight mb-6 tracking-tight">
-                  Empowering <br /><span className="font-semibold text-gradient">Progress.</span>
-                </h1>
-              </FadeIn>
-              <FadeIn delay={0.6} direction="up">
-                <p className="text-lg md:text-xl text-slate-300 max-w-2xl mb-12 font-light leading-relaxed">
-                  Delivering premium quality, building unshakeable trust, and driving innovative solutions for government and corporate sectors across Malaysia.
-                </p>
-              </FadeIn>
-              <FadeIn delay={0.8} direction="up">
-                <div className="flex flex-wrap gap-6">
-                  <button onClick={() => scrollTo('services')} className="bg-cyan-500 hover:bg-cyan-400 text-slate-950 px-8 py-4 font-semibold tracking-wide flex items-center gap-2 transition-all hover:gap-4 shadow-[0_0_20px_rgba(6,182,212,0.3)]">
-                    Discover Our Services <ArrowRight size={18} />
-                  </button>
-                  <button onClick={() => scrollTo('contact')} className="border border-slate-400 hover:border-cyan-400 hover:text-cyan-400 text-white px-8 py-4 font-semibold tracking-wide transition-all">
-                    Partner With Us
-                  </button>
-                </div>
-              </FadeIn>
-            </div>
-          </section>
-
-          {/* --- ABOUT SECTION --- */}
-          <section id="about" className="py-24 lg:py-32 relative">
-            <div className="max-w-7xl mx-auto px-6 lg:px-12">
-              <div className="grid lg:grid-cols-2 gap-16 items-center">
-                <FadeIn direction="left">
-                  <h2 className="text-3xl md:text-5xl font-light text-white mb-6">
-                    Redefining Corporate <br/><span className="font-semibold text-cyan-400">Reliability.</span>
-                  </h2>
-                  <p className="text-slate-300 text-lg leading-relaxed mb-6">
-                    Established in October 2025, FIRAZZURRI EMPIRE (003784056-D) is a premier trading and service provider strategically positioned to deliver innovative solutions. Operating actively from Pulau Pinang, our foundation is built on integrity, quality, and rigorous professionalism.
-                  </p>
-                  <div className="flex flex-col gap-4 mt-10">
-                    <div className="flex items-start gap-4">
-                      <div className="p-3 glass-panel rounded-lg text-cyan-400"><Award size={24} /></div>
-                      <div>
-                        <h4 className="text-white font-semibold tracking-wide">Government Recognized</h4>
-                        <p className="text-slate-400 text-sm mt-1">Officially registered under Federal & Penang State ePerolehan.</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-4">
-                      <div className="p-3 glass-panel rounded-lg text-cyan-400"><Building size={24} /></div>
-                      <div>
-                        <h4 className="text-white font-semibold tracking-wide">End-to-End Solutions</h4>
-                        <p className="text-slate-400 text-sm mt-1">From high-end IT infrastructure to complete office renovations.</p>
-                      </div>
-                    </div>
-                  </div>
-                </FadeIn>
-                <FadeIn direction="right" delay={0.2} className="relative">
-                  <div className="absolute inset-0 bg-cyan-500/5 translate-x-4 translate-y-4 rounded-xl"></div>
-                  <div className="glass-panel p-8 md:p-12 relative rounded-xl border border-white/10">
-                    <div className="mb-8">
-                      <h3 className="text-xl text-white font-semibold mb-2">Welcome Message</h3>
-                      <div className="h-1 w-12 bg-cyan-400 mb-6"></div>
-                      <p className="text-slate-300 italic font-light leading-relaxed">
-                        "At FIRAZZURRI EMPIRE, we believe in building long-term relationships based on integrity, professionalism, and commitment to excellence. We understand that every client has unique needs, and our mission is to deliver tailored solutions that add value and contribute to their success."
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-cyan-600 rounded-full flex items-center justify-center text-slate-950 font-bold text-xl">MF</div>
-                      <div>
-                        <p className="text-white font-semibold tracking-wide">Mohamad Firdaus Bin Samsuddin</p>
-                        <p className="text-cyan-400 text-sm tracking-wider uppercase">Founder & CEO</p>
-                      </div>
-                    </div>
-                  </div>
-                </FadeIn>
-              </div>
-            </div>
-          </section>
-
-          {/* --- SERVICES SECTION --- */}
-          <section id="services" className="py-24 lg:py-32 bg-slate-900/30 relative border-y border-white/5">
-            <div className="max-w-7xl mx-auto px-6 lg:px-12">
-              <FadeIn direction="up">
-                <div className="text-center max-w-3xl mx-auto mb-20">
-                  <h2 className="text-sm tracking-[0.3em] text-cyan-400 uppercase font-semibold mb-4">Our Expertise</h2>
-                  <h3 className="text-3xl md:text-5xl font-light text-white">Comprehensive Solutions <br/>for Modern Enterprises</h3>
-                </div>
-              </FadeIn>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {SERVICES.map((service, index) => (
-                  <FadeIn key={index} delay={index * 0.1} direction="up">
-                    <div className="glass-panel p-8 h-full rounded-xl hover:-translate-y-2 transition-all duration-500 group border border-white/5 hover:border-cyan-400/40">
-                      <div className="mb-6 p-4 bg-slate-900 rounded-lg inline-block group-hover:scale-110 transition-transform duration-500 shadow-inner shadow-cyan-500/10">
-                        {service.icon}
-                      </div>
-                      <h4 className="text-xl text-white font-semibold mb-4 tracking-wide">{service.title}</h4>
-                      <p className="text-slate-400 leading-relaxed font-light">{service.description}</p>
-                    </div>
-                  </FadeIn>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* --- PAST PROJECTS SECTION --- */}
-          <section id="projects" className="py-24 lg:py-32">
-            <div className="max-w-7xl mx-auto px-6 lg:px-12">
-              <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
-                <FadeIn direction="right">
-                  <h2 className="text-sm tracking-[0.3em] text-cyan-400 uppercase font-semibold mb-4">Proven Track Record</h2>
-                  <h3 className="text-3xl md:text-5xl font-light text-white">Trusted by the Best</h3>
-                </FadeIn>
-              </div>
-              <div className="grid md:grid-cols-3 gap-8">
-                {PROJECTS.map((project, index) => (
-                  <FadeIn key={index} delay={index * 0.2} direction="up">
-                    <div className="group relative overflow-hidden rounded-xl aspect-[4/5] glass-panel cursor-pointer border border-white/5 hover:border-cyan-400/30 transition-colors">
-                      <img src={project.image} alt={project.client} className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-luminosity group-hover:mix-blend-normal group-hover:opacity-30 transition-all duration-700 group-hover:scale-105" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent"></div>
-                      <div className="absolute inset-0 p-8 flex flex-col justify-end transform transition-transform duration-500 group-hover:translate-y-0 translate-y-8">
-                        <h4 className="text-2xl text-white font-semibold mb-3">{project.client}</h4>
-                        <p className="text-slate-300 text-sm leading-relaxed mb-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">{project.scope}</p>
-                        <div className="flex items-center gap-2 text-cyan-400 text-sm font-semibold tracking-widest uppercase">View Details <ChevronRight size={16} /></div>
-                      </div>
-                    </div>
-                  </FadeIn>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* --- CONTACT SECTION --- */}
-          <section id="contact" className="py-24 lg:py-32 relative border-t border-white/5 bg-slate-950">
-            <div className="max-w-7xl mx-auto px-6 lg:px-12">
-              <div className="grid lg:grid-cols-2 gap-16">
-                <FadeIn direction="left">
-                  <h2 className="text-4xl md:text-6xl font-light text-white mb-8">
-                    Let's Build The <br/><span className="text-cyan-400 font-semibold">Future Together.</span>
-                  </h2>
-                  <p className="text-slate-300 text-lg mb-12 max-w-md font-light">Whether you're looking for procurement solutions, IT infrastructure, or facility maintenance, we are ready to elevate your operations.</p>
-                  <div className="space-y-8">
-                    <div className="flex items-start gap-4">
-                      <div className="p-3 bg-slate-900 text-cyan-400 rounded flex-shrink-0 border border-white/5"><MapPin size={24} /></div>
-                      <div>
-                        <h4 className="text-white font-semibold uppercase tracking-widest text-sm mb-1">Headquarters</h4>
-                        <p className="text-slate-400 font-light">Block 306-2-12A, Taman Jelutong,<br/>11600 Jelutong, Pulau Pinang</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-4">
-                      <div className="p-3 bg-slate-900 text-cyan-400 rounded flex-shrink-0 border border-white/5"><Phone size={24} /></div>
-                      <div>
-                        <h4 className="text-white font-semibold uppercase tracking-widest text-sm mb-1">Direct Line</h4>
-                        <a href="tel:+601110135379" className="text-slate-400 font-light hover:text-cyan-400 transition-colors">+60 11-1013 5379 (Fir)</a>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-4">
-                      <div className="p-3 bg-slate-900 text-cyan-400 rounded flex-shrink-0 border border-white/5"><Mail size={24} /></div>
-                      <div>
-                        <h4 className="text-white font-semibold uppercase tracking-widest text-sm mb-1">Email Inquiry</h4>
-                        <a href="mailto:firazzurri@gmail.com" className="text-slate-400 font-light hover:text-cyan-400 transition-colors">firazzurri@gmail.com</a>
-                      </div>
-                    </div>
-                  </div>
-                </FadeIn>
-                <FadeIn direction="right" delay={0.2}>
-                  <div className="glass-panel p-8 md:p-12 rounded-xl border border-white/10">
-                    <h3 className="text-2xl text-white font-semibold mb-8 tracking-wide">Send us a message</h3>
-                    <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
-                      <div className="grid md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                          <label className="text-xs uppercase tracking-widest text-slate-400 font-semibold">Name</label>
-                          <input type="text" className="w-full bg-slate-900/50 border border-white/10 rounded px-4 py-3 text-white focus:outline-none focus:border-cyan-400 transition-colors" placeholder="John Doe" />
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-xs uppercase tracking-widest text-slate-400 font-semibold">Company</label>
-                          <input type="text" className="w-full bg-slate-900/50 border border-white/10 rounded px-4 py-3 text-white focus:outline-none focus:border-cyan-400 transition-colors" placeholder="Your Organization" />
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-xs uppercase tracking-widest text-slate-400 font-semibold">Email</label>
-                        <input type="email" className="w-full bg-slate-900/50 border border-white/10 rounded px-4 py-3 text-white focus:outline-none focus:border-cyan-400 transition-colors" placeholder="john@example.com" />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-xs uppercase tracking-widest text-slate-400 font-semibold">Message</label>
-                        <textarea rows="4" className="w-full bg-slate-900/50 border border-white/10 rounded px-4 py-3 text-white focus:outline-none focus:border-cyan-400 transition-colors resize-none" placeholder="How can we help you?"></textarea>
-                      </div>
-                      <div className="flex gap-4 pt-4">
-                        <button className="flex-1 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-semibold tracking-wide py-4 transition-colors">Submit Inquiry</button>
-                        <a href="https://wa.me/601110135379" target="_blank" rel="noreferrer" className="flex-1 border border-slate-500 hover:border-green-500 hover:text-green-500 flex items-center justify-center gap-2 text-white font-semibold tracking-wide py-4 transition-colors">WhatsApp Us</a>
-                      </div>
-                    </form>
-                  </div>
-                </FadeIn>
-              </div>
-            </div>
-          </section>
-
-          {/* --- FOOTER --- */}
-          <footer className="border-t border-white/5 py-12 bg-slate-950">
-            <div className="max-w-7xl mx-auto px-6 lg:px-12 flex flex-col md:flex-row justify-between items-center gap-6">
-              <div className="flex items-center gap-2">
-                <img src="./FirazzurriEmpire_logo_transparent.png" alt="FIRAZZURRI EMPIRE" className="h-10 w-auto object-contain opacity-80" />
-              </div>
-              <div className="text-slate-500 text-sm font-light text-center md:text-left flex flex-col md:flex-row items-center gap-2 md:gap-6">
-                <span>© 2026 FIRAZZURRI EMPIRE. All rights reserved.</span>
-                <span className="hidden md:inline">|</span>
-                <span>SSM: 202503278189 (003784056-D)</span>
-                <span className="hidden md:inline">|</span>
-                <span>eP-0704F01FH</span>
-              </div>
-            </div>
-          </footer>
-        </div>
-      );
+    body { background-color: #020617; color: #cbd5e1; font-family: ui-sans-serif, system-ui, sans-serif; }
+    ::selection { background-color: rgba(6, 182, 212, 0.3); }
+    
+    .glass-panel { 
+      background: rgba(15, 23, 42, 0.6); 
+      backdrop-filter: blur(12px); 
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.05); 
+    }
+    
+    .text-gradient { 
+      background: linear-gradient(to right, #e2e8f0, #06b6d4); 
+      -webkit-background-clip: text; 
+      -webkit-text-fill-color: transparent; 
     }
 
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<App />);
+    /* Scroll Animation Classes */
+    .fade-in {
+      opacity: 0;
+      transition: all 0.8s cubic-bezier(0.17, 0.55, 0.55, 1);
+    }
+    .fade-in.up { transform: translateY(30px); }
+    .fade-in.left { transform: translateX(-30px); }
+    .fade-in.right { transform: translateX(30px); }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translate(0);
+    }
+  </style>
+</head>
+<body class="antialiased selection:bg-cyan-500/30">
+
+  <!-- --- NAVIGATION --- -->
+  <nav id="navbar" class="fixed w-full z-50 transition-all duration-500 py-6 bg-transparent">
+    <div class="max-w-7xl mx-auto px-6 lg:px-12 flex justify-between items-center">
+      <div class="flex items-center gap-3 cursor-pointer" onclick="scrollToId('home')">
+        <img src="FirazzurriEmpire_logo_transparent.png" alt="FIRAZZURRI EMPIRE Logo" class="h-12 sm:h-16 w-auto object-contain drop-shadow-md" onerror="this.src='https://via.placeholder.com/150x50?text=F'" />
+        <span class="text-white font-bold tracking-widest text-lg hidden sm:block">FIRAZZURRI EMPIRE</span>
+      </div>
+
+      <div class="hidden md:flex gap-8 text-sm tracking-widest font-medium uppercase">
+        <button onclick="scrollToId('about')" class="text-slate-200 hover:text-cyan-400 transition-colors">About</button>
+        <button onclick="scrollToId('services')" class="text-slate-200 hover:text-cyan-400 transition-colors">Services</button>
+        <button onclick="scrollToId('projects')" class="text-slate-200 hover:text-cyan-400 transition-colors">Projects</button>
+        <button onclick="scrollToId('contact')" class="text-slate-200 hover:text-cyan-400 transition-colors">Contact</button>
+      </div>
+
+      <button id="menu-btn" class="md:hidden text-white cursor-pointer">
+        <i data-lucide="menu" id="icon-menu"></i>
+        <i data-lucide="x" id="icon-x" class="hidden"></i>
+      </button>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden absolute top-full left-0 w-full glass-panel flex-col py-6 px-6 gap-6 md:hidden border-t border-white/10">
+      <button onclick="scrollToId('about')" class="text-left text-lg tracking-widest uppercase text-slate-200 hover:text-cyan-400">About</button>
+      <button onclick="scrollToId('services')" class="text-left text-lg tracking-widest uppercase text-slate-200 hover:text-cyan-400 mt-4">Services</button>
+      <button onclick="scrollToId('projects')" class="text-left text-lg tracking-widest uppercase text-slate-200 hover:text-cyan-400 mt-4">Projects</button>
+      <button onclick="scrollToId('contact')" class="text-left text-lg tracking-widest uppercase text-slate-200 hover:text-cyan-400 mt-4">Contact</button>
+    </div>
+  </nav>
+
+  <!-- --- HERO SECTION --- -->
+  <section id="home" class="relative min-h-screen flex items-center pt-20 overflow-hidden">
+    <!-- Background Image & Overlay -->
+    <div class="absolute inset-0 z-0">
+      <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" alt="Corporate Architecture" class="w-full h-full object-cover opacity-15 scale-105 transform origin-center animate-[pulse_20s_ease-in-out_infinite] grayscale" />
+      <div class="absolute inset-0 bg-gradient-to-b from-slate-950/60 via-slate-950/80 to-slate-950"></div>
+    </div>
+
+    <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 w-full">
+      <div class="fade-in up inline-block border border-cyan-500/30 rounded-full px-4 py-1.5 mb-6 glass-panel" style="transition-delay: 0.2s">
+        <span class="text-cyan-400 text-xs font-semibold tracking-widest uppercase flex items-center gap-2">
+          <i data-lucide="shield-check" class="w-4 h-4"></i> SSM & ePerolehan Registered
+        </span>
+      </div>
+      
+      <div class="fade-in up" style="transition-delay: 0.4s">
+        <!-- Replaced H1 text with the new 3D Logo Image -->
+        <img src="FirazzurriEmpire_logo_transparent.jpg" alt="FIRAZZURRI EMPIRE 3D Logo" class="w-full max-w-2xl md:max-w-4xl object-contain drop-shadow-2xl mb-8 rounded-xl border border-white/5 shadow-[0_0_40px_rgba(6,182,212,0.15)]" onerror="this.style.display='none'" />
+      </div>
+
+      <div class="fade-in up" style="transition-delay: 0.6s">
+        <!-- Updated wording with the Motto highlighted -->
+        <p class="text-lg md:text-xl text-slate-300 max-w-3xl mb-12 font-light leading-relaxed">
+          <strong class="text-cyan-400 font-semibold tracking-wide text-xl md:text-2xl block mb-2">Empowering Progress. Delivering Quality. Building Trust.</strong>
+          We at FIRAZZURRI EMPIRE drive innovative solutions for government and corporate sectors across Malaysia.
+        </p>
+      </div>
+
+      <div class="fade-in up flex flex-wrap gap-6" style="transition-delay: 0.8s">
+        <button onclick="scrollToId('services')" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 px-8 py-4 font-semibold tracking-wide flex items-center gap-2 transition-all hover:gap-4 shadow-[0_0_20px_rgba(6,182,212,0.3)]">
+          Discover Our Services <i data-lucide="arrow-right" class="w-5 h-5"></i>
+        </button>
+        <button onclick="scrollToId('contact')" class="border border-slate-400 hover:border-cyan-400 hover:text-cyan-400 text-white px-8 py-4 font-semibold tracking-wide transition-all">
+          Partner With Us
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- --- ABOUT SECTION --- -->
+  <section id="about" class="py-24 lg:py-32 relative">
+    <div class="max-w-7xl mx-auto px-6 lg:px-12">
+      <div class="grid lg:grid-cols-2 gap-16 items-center">
+        <div class="fade-in left">
+          <h2 class="text-3xl md:text-5xl font-light text-white mb-6">
+            Redefining Corporate <br/><span class="font-semibold text-cyan-400">Reliability.</span>
+          </h2>
+          <p class="text-slate-300 text-lg leading-relaxed mb-6">
+            Established in October 2025, FIRAZZURRI EMPIRE (003784056-D) is a premier trading and service provider strategically positioned to deliver innovative solutions. Operating actively from Pulau Pinang, our foundation is built on integrity, quality, and rigorous professionalism.
+          </p>
+          <div class="flex flex-col gap-4 mt-10">
+            <div class="flex items-start gap-4">
+              <div class="p-3 glass-panel rounded-lg text-cyan-400"><i data-lucide="award" class="w-6 h-6"></i></div>
+              <div>
+                <h4 class="text-white font-semibold tracking-wide">Government Recognized</h4>
+                <p class="text-slate-400 text-sm mt-1">Officially registered under Federal & Penang State ePerolehan.</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-4 mt-4">
+              <div class="p-3 glass-panel rounded-lg text-cyan-400"><i data-lucide="building" class="w-6 h-6"></i></div>
+              <div>
+                <h4 class="text-white font-semibold tracking-wide">End-to-End Solutions</h4>
+                <p class="text-slate-400 text-sm mt-1">From high-end IT infrastructure to complete office renovations.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="fade-in right relative" style="transition-delay: 0.2s">
+          <div class="absolute inset-0 bg-cyan-500/5 translate-x-4 translate-y-4 rounded-xl"></div>
+          <div class="glass-panel p-8 md:p-12 relative rounded-xl border border-white/10">
+            <div class="mb-8">
+              <h3 class="text-xl text-white font-semibold mb-2">Welcome Message</h3>
+              <div class="h-1 w-12 bg-cyan-400 mb-6"></div>
+              <p class="text-slate-300 italic font-light leading-relaxed">
+                "At FIRAZZURRI EMPIRE, we believe in building long-term relationships based on integrity, professionalism, and commitment to excellence. We understand that every client has unique needs, and our mission is to deliver tailored solutions that add value and contribute to their success."
+              </p>
+            </div>
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-gradient-to-br from-cyan-400 to-cyan-600 rounded-full flex items-center justify-center text-slate-950 font-bold text-xl">
+                MF
+              </div>
+              <div>
+                <p class="text-white font-semibold tracking-wide">Mohamad Firdaus Bin Samsuddin</p>
+                <p class="text-cyan-400 text-sm tracking-wider uppercase">Founder & CEO</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- --- SERVICES SECTION --- -->
+  <section id="services" class="py-24 lg:py-32 bg-slate-900/30 relative border-y border-white/5">
+    <div class="max-w-7xl mx-auto px-6 lg:px-12">
+      <div class="fade-in up text-center max-w-3xl mx-auto mb-20">
+        <h2 class="text-sm tracking-[0.3em] text-cyan-400 uppercase font-semibold mb-4">Our Expertise</h2>
+        <h3 class="text-3xl md:text-5xl font-light text-white">Comprehensive Solutions <br/>for Modern Enterprises</h3>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <div class="fade-in up glass-panel p-8 h-full rounded-xl hover:-translate-y-2 transition-all duration-500 group border border-white/5 hover:border-cyan-400/40" style="transition-delay: 0.1s">
+          <div class="mb-6 p-4 bg-slate-900 rounded-lg inline-block group-hover:scale-110 transition-transform duration-500 shadow-inner shadow-cyan-500/10">
+            <i data-lucide="briefcase" class="w-7 h-7 text-cyan-400"></i>
+          </div>
+          <h4 class="text-xl text-white font-semibold mb-4 tracking-wide">Office & Stationery Supplies</h4>
+          <p class="text-slate-400 leading-relaxed font-light">Comprehensive office essentials, equipment, furniture, and customized corporate items to ensure smooth daily operations.</p>
+        </div>
+
+        <div class="fade-in up glass-panel p-8 h-full rounded-xl hover:-translate-y-2 transition-all duration-500 group border border-white/5 hover:border-cyan-400/40" style="transition-delay: 0.2s">
+          <div class="mb-6 p-4 bg-slate-900 rounded-lg inline-block group-hover:scale-110 transition-transform duration-500 shadow-inner shadow-cyan-500/10">
+            <i data-lucide="monitor" class="w-7 h-7 text-cyan-400"></i>
+          </div>
+          <h4 class="text-xl text-white font-semibold mb-4 tracking-wide">Information Technology</h4>
+          <p class="text-slate-400 leading-relaxed font-light">End-to-end IT solutions including hardware supply, networking, servers, and preventive maintenance.</p>
+        </div>
+
+        <div class="fade-in up glass-panel p-8 h-full rounded-xl hover:-translate-y-2 transition-all duration-500 group border border-white/5 hover:border-cyan-400/40" style="transition-delay: 0.3s">
+          <div class="mb-6 p-4 bg-slate-900 rounded-lg inline-block group-hover:scale-110 transition-transform duration-500 shadow-inner shadow-cyan-500/10">
+            <i data-lucide="wrench" class="w-7 h-7 text-cyan-400"></i>
+          </div>
+          <h4 class="text-xl text-white font-semibold mb-4 tracking-wide">Maintenance & Facility</h4>
+          <p class="text-slate-400 leading-relaxed font-light">Routine office maintenance, electrical, plumbing, and cleaning services ensuring a safe and professional environment.</p>
+        </div>
+
+        <div class="fade-in up glass-panel p-8 h-full rounded-xl hover:-translate-y-2 transition-all duration-500 group border border-white/5 hover:border-cyan-400/40" style="transition-delay: 0.4s">
+          <div class="mb-6 p-4 bg-slate-900 rounded-lg inline-block group-hover:scale-110 transition-transform duration-500 shadow-inner shadow-cyan-500/10">
+            <i data-lucide="hammer" class="w-7 h-7 text-cyan-400"></i>
+          </div>
+          <h4 class="text-xl text-white font-semibold mb-4 tracking-wide">Renovation Works</h4>
+          <p class="text-slate-400 leading-relaxed font-light">Tailored small-scale renovation, layout partitioning, flooring, and structural improvements for modern workspaces.</p>
+        </div>
+
+        <div class="fade-in up glass-panel p-8 h-full rounded-xl hover:-translate-y-2 transition-all duration-500 group border border-white/5 hover:border-cyan-400/40" style="transition-delay: 0.5s">
+          <div class="mb-6 p-4 bg-slate-900 rounded-lg inline-block group-hover:scale-110 transition-transform duration-500 shadow-inner shadow-cyan-500/10">
+            <i data-lucide="shopping-bag" class="w-7 h-7 text-cyan-400"></i>
+          </div>
+          <h4 class="text-xl text-white font-semibold mb-4 tracking-wide">General Trading</h4>
+          <p class="text-slate-400 leading-relaxed font-light">Customized sourcing for diverse client needs including PPE, corporate gifts, and specialized procurement.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- --- PAST PROJECTS SECTION --- -->
+  <section id="projects" class="py-24 lg:py-32">
+    <div class="max-w-7xl mx-auto px-6 lg:px-12">
+      <div class="fade-in right mb-16">
+        <h2 class="text-sm tracking-[0.3em] text-cyan-400 uppercase font-semibold mb-4">Proven Track Record</h2>
+        <h3 class="text-3xl md:text-5xl font-light text-white">Trusted by the Best</h3>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-8">
+        <!-- Project 1 -->
+        <div class="fade-in up group relative overflow-hidden rounded-xl aspect-[4/5] glass-panel cursor-pointer border border-white/5 hover:border-cyan-400/30 transition-colors" style="transition-delay: 0.1s">
+          <img src="https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="MBPP" class="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-luminosity group-hover:mix-blend-normal group-hover:opacity-30 transition-all duration-700 group-hover:scale-105" />
+          <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent"></div>
+          <div class="absolute inset-0 p-8 flex flex-col justify-end transform transition-transform duration-500 group-hover:translate-y-0 translate-y-8">
+            <h4 class="text-2xl text-white font-semibold mb-3">Majlis Bandaraya Pulau Pinang (MBPP)</h4>
+            <p class="text-slate-300 text-sm leading-relaxed mb-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
+              Supply of operational, cleaning, and safety equipment for municipal operations.
+            </p>
+            <div class="flex items-center gap-2 text-cyan-400 text-sm font-semibold tracking-widest uppercase">
+              View Details <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project 2 -->
+        <div class="fade-in up group relative overflow-hidden rounded-xl aspect-[4/5] glass-panel cursor-pointer border border-white/5 hover:border-cyan-400/30 transition-colors" style="transition-delay: 0.3s">
+          <img src="https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="JIM" class="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-luminosity group-hover:mix-blend-normal group-hover:opacity-30 transition-all duration-700 group-hover:scale-105" />
+          <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent"></div>
+          <div class="absolute inset-0 p-8 flex flex-col justify-end transform transition-transform duration-500 group-hover:translate-y-0 translate-y-8">
+            <h4 class="text-2xl text-white font-semibold mb-3">Jabatan Insolvensi Malaysia</h4>
+            <p class="text-slate-300 text-sm leading-relaxed mb-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
+              Supply of office consumables, filing accessories, and operational support items.
+            </p>
+            <div class="flex items-center gap-2 text-cyan-400 text-sm font-semibold tracking-widest uppercase">
+              View Details <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project 3 -->
+        <div class="fade-in up group relative overflow-hidden rounded-xl aspect-[4/5] glass-panel cursor-pointer border border-white/5 hover:border-cyan-400/30 transition-colors" style="transition-delay: 0.5s">
+          <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="JAPEN" class="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-luminosity group-hover:mix-blend-normal group-hover:opacity-30 transition-all duration-700 group-hover:scale-105" />
+          <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent"></div>
+          <div class="absolute inset-0 p-8 flex flex-col justify-end transform transition-transform duration-500 group-hover:translate-y-0 translate-y-8">
+            <h4 class="text-2xl text-white font-semibold mb-3">Jabatan Penerangan Malaysia</h4>
+            <p class="text-slate-300 text-sm leading-relaxed mb-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
+              Delivery of essential office and operational items required for daily administrative activities.
+            </p>
+            <div class="flex items-center gap-2 text-cyan-400 text-sm font-semibold tracking-widest uppercase">
+              View Details <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- --- CONTACT SECTION --- -->
+  <section id="contact" class="py-24 lg:py-32 relative border-t border-white/5 bg-slate-950">
+    <div class="max-w-7xl mx-auto px-6 lg:px-12">
+      <div class="grid lg:grid-cols-2 gap-16">
+        <div class="fade-in left">
+          <h2 class="text-4xl md:text-6xl font-light text-white mb-8">
+            Let's Build The <br/><span class="text-cyan-400 font-semibold">Future Together.</span>
+          </h2>
+          <p class="text-slate-300 text-lg mb-12 max-w-md font-light">
+            Whether you're looking for procurement solutions, IT infrastructure, or facility maintenance, we are ready to elevate your operations.
+          </p>
+          
+          <div class="space-y-8">
+            <div class="flex items-start gap-4">
+              <div class="p-3 bg-slate-900 text-cyan-400 rounded flex-shrink-0 border border-white/5"><i data-lucide="map-pin" class="w-6 h-6"></i></div>
+              <div>
+                <h4 class="text-white font-semibold uppercase tracking-widest text-sm mb-1">Headquarters</h4>
+                <p class="text-slate-400 font-light">Block 306-2-12A, Taman Jelutong,<br/>11600 Jelutong, Pulau Pinang</p>
+              </div>
+            </div>
+            
+            <div class="flex items-start gap-4">
+              <div class="p-3 bg-slate-900 text-cyan-400 rounded flex-shrink-0 border border-white/5"><i data-lucide="phone" class="w-6 h-6"></i></div>
+              <div>
+                <h4 class="text-white font-semibold uppercase tracking-widest text-sm mb-1">Direct Line</h4>
+                <a href="tel:+601110135379" class="text-slate-400 font-light hover:text-cyan-400 transition-colors">
+                  +60 11-1013 5379 (Fir)
+                </a>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4">
+              <div class="p-3 bg-slate-900 text-cyan-400 rounded flex-shrink-0 border border-white/5"><i data-lucide="mail" class="w-6 h-6"></i></div>
+              <div>
+                <h4 class="text-white font-semibold uppercase tracking-widest text-sm mb-1">Email Inquiry</h4>
+                <a href="mailto:firazzurri@gmail.com" class="text-slate-400 font-light hover:text-cyan-400 transition-colors">
+                  firazzurri@gmail.com
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="fade-in right glass-panel p-8 md:p-12 rounded-xl border border-white/10" style="transition-delay: 0.2s">
+          <h3 class="text-2xl text-white font-semibold mb-8 tracking-wide">Send us a message</h3>
+          <form class="space-y-6" onsubmit="event.preventDefault();">
+            <div class="grid md:grid-cols-2 gap-6">
+              <div class="space-y-2">
+                <label class="text-xs uppercase tracking-widest text-slate-400 font-semibold">Name</label>
+                <input type="text" class="w-full bg-slate-900/50 border border-white/10 rounded px-4 py-3 text-white focus:outline-none focus:border-cyan-400 transition-colors" placeholder="John Doe" />
+              </div>
+              <div class="space-y-2">
+                <label class="text-xs uppercase tracking-widest text-slate-400 font-semibold">Company</label>
+                <input type="text" class="w-full bg-slate-900/50 border border-white/10 rounded px-4 py-3 text-white focus:outline-none focus:border-cyan-400 transition-colors" placeholder="Your Organization" />
+              </div>
+            </div>
+            <div class="space-y-2">
+              <label class="text-xs uppercase tracking-widest text-slate-400 font-semibold">Email</label>
+              <input type="email" class="w-full bg-slate-900/50 border border-white/10 rounded px-4 py-3 text-white focus:outline-none focus:border-cyan-400 transition-colors" placeholder="john@example.com" />
+            </div>
+            <div class="space-y-2">
+              <label class="text-xs uppercase tracking-widest text-slate-400 font-semibold">Message</label>
+              <textarea rows="4" class="w-full bg-slate-900/50 border border-white/10 rounded px-4 py-3 text-white focus:outline-none focus:border-cyan-400 transition-colors resize-none" placeholder="How can we help you?"></textarea>
+            </div>
+            
+            <div class="flex gap-4 pt-4">
+              <button class="flex-1 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-semibold tracking-wide py-4 transition-colors">
+                Submit Inquiry
+              </button>
+              <a href="https://wa.me/601110135379" target="_blank" rel="noreferrer" class="flex-1 border border-slate-500 hover:border-green-500 hover:text-green-500 flex items-center justify-center gap-2 text-white font-semibold tracking-wide py-4 transition-colors">
+                WhatsApp Us
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- --- FOOTER --- -->
+  <footer class="border-t border-white/5 py-12 bg-slate-950">
+    <div class="max-w-7xl mx-auto px-6 lg:px-12 flex flex-col md:flex-row justify-between items-center gap-6">
+      <div class="flex items-center gap-3">
+        <img src="FirazzurriEmpire_logo_transparent.png" alt="FIRAZZURRI EMPIRE Logo" class="h-10 w-auto object-contain opacity-80" onerror="this.style.display='none'" />
+        <span class="text-white font-bold tracking-widest text-sm">FIRAZZURRI EMPIRE</span>
+      </div>
+      
+      <div class="text-slate-500 text-sm font-light text-center md:text-left flex flex-col md:flex-row items-center gap-2 md:gap-6">
+        <span>© 2026 FIRAZZURRI EMPIRE. All rights reserved.</span>
+        <span class="hidden md:inline">|</span>
+        <span>SSM: 202503278189 (003784056-D)</span>
+        <span class="hidden md:inline">|</span>
+        <span>eP-0704F01FH</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Javascript for functionality -->
+  <script>
+    // 1. Render Icons
+    lucide.createIcons();
+
+    // 2. Navbar Scroll Effect
+    const nav = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        nav.classList.add('py-4', 'glass-panel', 'shadow-2xl');
+        nav.classList.remove('py-6', 'bg-transparent');
+      } else {
+        nav.classList.add('py-6', 'bg-transparent');
+        nav.classList.remove('py-4', 'glass-panel', 'shadow-2xl');
+      }
+    });
+
+    // 3. Mobile Menu Toggle
+    const menuBtn = document.getElementById('menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const iconMenu = document.getElementById('icon-menu');
+    const iconX = document.getElementById('icon-x');
+    
+    menuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+      mobileMenu.classList.toggle('flex');
+      iconMenu.classList.toggle('hidden');
+      iconX.classList.toggle('hidden');
+    });
+
+    // 4. Smooth Scrolling & close menu
+    function scrollToId(id) {
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+        mobileMenu.classList.add('hidden');
+        mobileMenu.classList.remove('flex');
+        iconMenu.classList.remove('hidden');
+        iconX.classList.add('hidden');
+      }
+    }
+
+    // 5. Scroll Animations (Intersection Observer)
+    const observerOptions = { threshold: 0.1 };
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.fade-in').forEach((el) => {
+      observer.observe(el);
+    });
   </script>
 </body>
 </html>
